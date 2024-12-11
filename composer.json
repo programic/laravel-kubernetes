@@ -1,0 +1,28 @@
+{
+    "name": "programic/laravel-kubernetes",
+    "description": "Programic Laravel Kubernetes",
+    "autoload": {
+        "psr-4": {
+            "Programic\\LaravelKubernetes\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Nick Verschoor",
+            "email": "n.verschoor@programic.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "laravel/octane": "^2.6"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Programic\\LaravelKubernetes\\KubernetesServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
