@@ -14,7 +14,10 @@
     ],
     "require": {
         "php": "^8.2",
-        "laravel/octane": "^2.6"
+        "laravel/octane": "^2.6",
+        "monolog/monolog": "^3.8",
+        "open-telemetry/opentelemetry": "^1.0",
+        "php-http/httplug": "^2.4"
     },
     "extra": {
         "laravel": {
@@ -24,5 +27,11 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "tbachert/spi": true
+        }
+    }
 }
