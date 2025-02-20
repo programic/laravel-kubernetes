@@ -37,4 +37,44 @@ return [
     |
     */
     'max_execution_time' => env('MAX_EXECUTION_TIME', 60),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Container mode
+    |--------------------------------------------------------------------------
+    |
+    | This option defines the container mode that gets used when running
+    | the Docker container. The name specified in this option should match one
+    | of the following modes: "http", "horizon", "worker", "scheduler".
+    |
+    */
+    'container_mode' => env('CONTAINER_MODE', 'http'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Project Name
+    |--------------------------------------------------------------------------
+    |
+    | This option defines the name of the project that gets used when running
+    | the Docker container. The name specified in this option should match the
+    | name of the project that you are running.
+    |
+    */
+    'project_name' => env('PROJECT_NAME', null),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Metrics
+    |--------------------------------------------------------------------------
+    |
+    | This option defines the configuration for the metrics endpoint that
+    | gets used when running the Docker container. The configuration specified
+    | in this option should match the configuration of the metrics endpoint.
+    |
+    */
+    'metrics' => [
+        'enabled' => env('KUBERNETES_METRICS_ENABLED', true),
+        'path' => env('KUBERNETES_METRICS_PATH', 'prometheus'),
+        'middleware' => [],
+    ],
 ];

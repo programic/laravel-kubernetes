@@ -14,7 +14,8 @@
     ],
     "require": {
         "php": "^8.2",
-        "laravel/octane": "^2.6"
+        "laravel/octane": "^2.6",
+        "spatie/laravel-prometheus": "^1.2"
     },
     "extra": {
         "laravel": {
@@ -24,5 +25,14 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "tbachert/spi": true
+        }
+    },
+    "require-dev": {
+        "laravel/horizon": "^5.30"
+    }
 }
