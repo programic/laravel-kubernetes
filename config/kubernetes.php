@@ -28,6 +28,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Worker Count
+    |--------------------------------------------------------------------------
+    |
+    | This value defines the number of worker processes that will be started
+    | to process incoming requests. If you are using a load balancer, you may
+    | want to set this value to the number of CPU cores available.
+    |
+    */
+    'worker_count' => env('KUBERNETES_WORKER_COUNT', 'auto'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Maximum Execution Time
     |--------------------------------------------------------------------------
     |

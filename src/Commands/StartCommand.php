@@ -23,7 +23,7 @@ class StartCommand extends StartFrankenPhpCommand
                     {--port=80 : The port the server should be available on}
                     {--admin-host=localhost : The host the admin server should be available on}
                     {--admin-port=2019 : The port the admin server should be available on}
-                    {--workers=auto : The number of workers that should be available to handle requests}
+                    {--workers= : The number of workers that should be available to handle requests}
                     {--max-requests=500 : The number of requests to process before reloading the server}
                     {--caddyfile= : The path to the FrankenPHP Caddyfile file}
                     {--https : Enable HTTPS, HTTP/2, and HTTP/3, and automatically generate and renew certificates}
@@ -51,7 +51,7 @@ class StartCommand extends StartFrankenPhpCommand
             ->each(function ($output): void {
                 $debug = json_decode($output, true);
 
-                if (! is_array($debug)) {
+                if (!is_array($debug)) {
                     $this->components->info($output);
 
                     return;
@@ -67,9 +67,8 @@ class StartCommand extends StartFrankenPhpCommand
     {
         $watch = config('kubernetes.watch.enabled') || $this->option('watch');
 
-        if (! $watch) {
-            return new class
-            {
+        if (!$watch) {
+            return new class {
                 public function __call($method, $parameters)
                 {
                     return null;
@@ -86,8 +85,19 @@ class StartCommand extends StartFrankenPhpCommand
         return tap(new Process([
             (new ExecutableFinder)->find('node'),
             'file-watcher.cjs',
-            json_encode(collect(config('octane.watch'))->map(fn ($path) => base_path($path))),
+            json_encode(collect(config('octane.watch'))->map(fn($path) => base_path($path))),
             $this->option('poll'),
-        ], realpath(__DIR__.'/../../bin'), null, null, null))->start();
+        ], realpath(__DIR__ . '/../../bin'), null, null, null))->start();
+    }
+
+    protected function workerCount(): int
+    {
+        $count = $this->option('workers') ?? config('kubernetes.worker_count');
+
+        if ($count === 'auto') {
+            return 0;
+        }
+
+        return (int) $count ?? 0;
     }
 }

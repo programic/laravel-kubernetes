@@ -31,8 +31,5 @@
             "php-http/discovery": true,
             "tbachert/spi": true
         }
-    },
-    "require-dev": {
-        "laravel/horizon": "^5.30"
     }
 }
