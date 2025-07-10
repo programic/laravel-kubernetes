@@ -36,7 +36,7 @@ return [
     | want to set this value to the number of CPU cores available.
     |
     */
-    'worker_count' => env('KUBERNETES_WORKER_COUNT', 'auto'),
+    'worker_count' => env('KUBERNETES_WORKER_COUNT', 1),
 
     /*
     |--------------------------------------------------------------------------
@@ -89,4 +89,10 @@ return [
         'path' => env('KUBERNETES_METRICS_PATH', 'prometheus'),
         'middleware' => [],
     ],
+
+    'tracing' => [
+        'enabled' => env('KUBERNETES_TRACING_ENABLED', true),
+        'url' => env('KUBERNETES_TRACING_URL', 'http://jaeger:4318/v1/traces'),
+        'traceparent_header' => env('KUBERNETES_TRACING_TRACEPARENT_HEADER', 'traceparent'),
+    ]
 ];

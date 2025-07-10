@@ -2,7 +2,11 @@
 
 namespace Programic\LaravelKubernetes;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Programic\LaravelKubernetes\Metrics\Collectors\Horizon\CurrentMasterSupervisorCollector;
 use Programic\LaravelKubernetes\Metrics\Collectors\Horizon\CurrentProcessesPerQueueCollector;
@@ -11,24 +15,27 @@ use Programic\LaravelKubernetes\Metrics\Collectors\Horizon\FailedJobsPerHourColl
 use Programic\LaravelKubernetes\Metrics\Collectors\Horizon\HorizonStatusCollector;
 use Programic\LaravelKubernetes\Metrics\Collectors\Horizon\JobsPerMinuteCollector;
 use Programic\LaravelKubernetes\Metrics\Collectors\Horizon\RecentJobsCollector;
+use Programic\LaravelKubernetes\Tracing\EventHandler;
+use Programic\LaravelKubernetes\Tracing\Middleware\Trace;
+use Programic\LaravelKubernetes\Tracing\TraceManager;
+use Spatie\OpenTelemetry\Drivers\HttpDriver;
 use Spatie\Prometheus\Facades\Prometheus;
 
 class KubernetesServiceProvider extends ServiceProvider
 {
-    public function register(): void
+    public function boot(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/kubernetes.php', 'kubernetes');
 
-        $this->registerMetricsCollectors();
-    }
-
-    public function boot(): void
-    {
         $this->registerPublishing();
         $this->registerCommands();
 
         $this->setOctaneConfig();
         $this->setPrometheusConfig();
+        $this->setOpenTelemetryConfig();
+
+        $this->registerTracing();
+        $this->registerMetricsCollectors();
     }
 
     protected function registerCommands(): void
@@ -64,6 +71,15 @@ class KubernetesServiceProvider extends ServiceProvider
         config()->set('prometheus.middleware', config('kubernetes.metrics.middleware'));
     }
 
+    protected function setOpenTelemetryConfig(): void
+    {
+        config()->set('open-telemetry.drivers', [
+            HttpDriver::class => [
+                'url' => config('kubernetes.tracing.url'),
+            ]
+        ]);
+    }
+
     protected function registerMetricsCollectors(): void
     {
         Prometheus::registerCollectorClasses([
@@ -75,5 +91,29 @@ class KubernetesServiceProvider extends ServiceProvider
             JobsPerMinuteCollector::class,
             RecentJobsCollector::class,
         ]);
+    }
+
+    protected function registerTracing(): void
+    {
+        if (!config('kubernetes.tracing.enabled')) {
+            return;
+        }
+
+        $this->app->singleton(TraceManager::class, function ($app) {
+            return new TraceManager();
+        });
+
+        $kernel = app()->make(Kernel::class);
+
+        $kernel->prependToMiddlewarePriority(Trace::class);
+
+        try {
+            $handler = new EventHandler();
+            $dispatcher = $this->app->make(Dispatcher::class);
+
+            $handler->subscribe($dispatcher);
+        } catch (BindingResolutionException $e) {
+            // Ignore if Dispatcher is not available
+        }
     }
 }
