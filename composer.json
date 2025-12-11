@@ -14,7 +14,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "laravel/octane": "^2.6",
+        "laravel/octane": "~2.11.0",
         "spatie/laravel-prometheus": "^1.2"
     },
     "extra": {
