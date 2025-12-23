@@ -1,4 +1,4 @@
-const chokidar = require('chokidar');
+import chokidar from 'chokidar';
 
 const paths = JSON.parse(process.argv[2]);
 const poll = process.argv[3] ? true : false;
